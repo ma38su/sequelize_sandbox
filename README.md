@@ -5,6 +5,22 @@ Feel free to try any sequelize feature with typescript on docker containers.
 Initial models create the table, after dropping it first if it already exists. 
 
 
+## Using both local and container environemnts
+
+Run rdb container:
+
+```
+docker-compose up --build -d rdb
+```
+
+Run node on local:
+```
+bash ./run.sh
+```
+
+
+## Using all containers environments
+
 Run all containers:
 
 ```
@@ -17,14 +33,3 @@ Stop all containers:
 docker-compose down
 ```
 
-Stop node container:
-
-```
-docker-compose stop node
-```
-
-Re-run node container after re-building the container:
-
-```
-docker-compose up node --build
-```
