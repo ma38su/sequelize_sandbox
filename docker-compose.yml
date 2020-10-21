@@ -1,0 +1,25 @@
+version: '3'
+services:
+  node:
+    build:
+      context: ./node
+    environment:
+      - RDB_DIALECT=mysql
+      - RDB_HOST=rdb
+      - RDB_PORT=3306
+      - RDB_DATABASE=sandbox
+      - RDB_USER=user
+      - RDB_PASSWORD=pass
+    depends_on:
+      - rdb
+  rdb:
+    image: mysql:8.0.20
+    environment:
+      - MYSQL_USER=user
+      - MYSQL_PASSWORD=pass
+      - MYSQL_ROOT_PASSWORD=secret
+      - MYSQL_DATABASE=sandbox
+      - TZ=Asia/Tokyo
+    ports:
+      - 3306:3306
+
