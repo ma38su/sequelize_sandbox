@@ -1,48 +1,12 @@
 import { Profile, sync, Team, TeamUserRelation, User } from './models';
+import { Job } from './models/job';
 
 async function main() {
 
-  console.log('sync...');
   await sync();
-  console.log('finished sync.');
 
   console.log();
-  await dumpRels();
-  await dumpUsersWithProfile();
   await dumpUsersWithProfileAndTeam();
-  await dumpUsersWithTeams();
-}
-
-async function dumpUsersWithProfile() {
-  console.log('dump users with profile')
-  const users = await User.findAll({
-    include: {
-      model: Profile,
-      as: 'profile'
-    }
-  });
-
-  users.forEach(user => {
-    const {id, name, profile} = user;
-    const { mail } = profile;
-    console.log("User, ", id, name, mail);
-  });
-}
-
-async function dumpRels() {
-
-  console.log('dump rels')
-
-  const rels = await TeamUserRelation.findAll({
-    include: {
-      model: Team,
-      as: 'team'
-    }
-  })
-  rels.forEach(rel => {
-    const {team} = rel;
-    console.log("Rel ", rel.userId, rel.teamId, team.name);
-  });
 }
 
 async function dumpUsersWithProfileAndTeam() {
@@ -62,39 +26,32 @@ async function dumpUsersWithProfileAndTeam() {
           model: Team,
           as: 'team'
         }]
-      }
-    ]
-  });
-
-  users.forEach(user => {
-    const {id, name, profile, relations} = user;
-    const { mail } = profile;
-    console.log("User, ", id, name, mail);
-    for (const rel of relations) {
-      const { team } = rel; 
-      console.log("  Team", team.id, team.name);
-    }
-  });
-}
-
-async function dumpUsersWithTeams() {
-
-  console.log('dump users with teams')
-
-  const users = await User.findAll({
-    include: [
+      },
       {
         model: Team,
         as: 'teams'
+      },
+      {
+        model: Job,
+        as: 'job'
       }
     ]
   });
 
   users.forEach(user => {
-    const {id, name, teams} = user;
-    console.log("User, ", id, name);
+    const {id, name, profile, relations, teams, job} = user;
+    const { mail } = profile;
+    const jobTitle = job.title;
+
+    console.log("User, ", {id, name, mail, jobTitle});
+    for (const rel of relations) {
+      const { team } = rel; 
+      const { id, name } = team;
+      console.log("  Team", { id, name });
+    }
     for (const team of teams) {
-      console.log("  Team", team.id, team.name);
+      const { id, name } = team;
+      console.log("  Team", { id, name });
     }
   });
 }

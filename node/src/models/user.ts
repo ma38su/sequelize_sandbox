@@ -1,17 +1,20 @@
 import { Model, DataTypes } from 'sequelize';
-import { Profile } from './profile';
 import { sequelize } from './sequelize-loader';
+import { Job } from './job';
+import { Profile } from './profile';
 import { Team } from './team';
 import { TeamUserRelation} from './team-user-relation';
 
 class User extends Model {
   public id!: number;
   public name!: string;
+  public jobId!: number;
 
   public readonly createdAt!: Date;
   public readonly updatedAt!: Date;
 
   // relations
+  public readonly job!: Job;
   public readonly profile!: Profile;
   public readonly relations!: TeamUserRelation[];
   public readonly teams!: Team[];
@@ -28,6 +31,14 @@ User.init(
     name: {
       type: DataTypes.STRING,
       allowNull: false
+    },
+    jobId: {
+      type: DataTypes.INTEGER,
+      allowNull: false,
+      references: {
+        model: Job,
+        key: 'id'
+      }
     }
   },
   {
@@ -37,5 +48,4 @@ User.init(
     timestamps: true
   }
 );
-
 export { User };

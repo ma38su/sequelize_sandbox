@@ -2,18 +2,29 @@ import { User } from './user';
 import { Profile } from './profile';
 import { Team } from './team';
 import { TeamUserRelation } from './team-user-relation';
+import { Job } from './job';
+import { ForeignKeyConstraintError } from 'sequelize';
 
 // Configure Sequelize for RDB
 async function sync() {
 
+  User.drop();
+
+  await Job.sync({ force: true }),
+  await User.sync(),
+
   console.log('sync...');
-  await User.sync({ force: true });
-  await Team.sync({ force: true });
-  await Profile.sync({ force: true });
-  await TeamUserRelation.sync({ force: true });
+  await Promise.all([
+    Team.sync({ force: true }),
+    Profile.sync({ force: true }),
+    TeamUserRelation.sync({ force: true }),
+  ]);
 
   console.log('setting relations...');
+
   User.hasOne(Profile, {sourceKey: 'id', foreignKey: 'userId', as: 'profile'});
+  User.belongsTo(Job, { foreignKey: 'jobId', targetKey: 'id', as: 'job'});
+  //Job.hasMany(User, {sourceKey: 'id', foreignKey: 'jobId', as: 'users'});
 
   User.hasMany(TeamUserRelation, {sourceKey: 'id', foreignKey: 'userId', as: 'relations'});
   TeamUserRelation.belongsTo(User, {foreignKey: 'userId', targetKey: 'id', as: 'user'});
@@ -24,10 +35,27 @@ async function sync() {
   User.belongsToMany(Team, {through: TeamUserRelation, as: 'teams'});
 
   console.log('upsert...');
+
+  const [engineer] = await Job.upsert({title: 'Engineer'});
+  const [resercher] = await Job.upsert({title: 'Reseacher'});
   
-  const [userA] = await User.upsert({name: 'User A'});
-  const [userB] = await User.upsert({name: 'User B'});
-  const [userC] = await User.upsert({name: 'User C'});
+  const [userA] = await User.upsert({name: 'User A', jobId: engineer.id});
+  const [userB] = await User.upsert({name: 'User B', jobId: resercher.id});
+
+  console.log('upsert error...');
+  try {
+    await User.upsert({name: 'User C', jobId: 100});
+    throw new Error('disabled Foreign Key Constraint');
+  } catch (err) {
+    if (err instanceof ForeignKeyConstraintError) {
+      console.log('ok');
+    } else {
+      throw err;
+    }
+  }
+
+  const [userC] = await User.upsert({name: 'User C', jobId: engineer.id});
+
   const [team1] = await Team.upsert({name: 'Team 1'});
   const [team2] = await Team.upsert({name: 'Team 2'});
 
