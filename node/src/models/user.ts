@@ -1,5 +1,7 @@
 import { Model, DataTypes } from 'sequelize';
+import { Profile } from './profile';
 import { sequelize } from './sequelize-loader';
+import { Team } from './team';
 import { TeamUserRelation} from './team-user-relation';
 
 class User extends Model {
@@ -8,7 +10,11 @@ class User extends Model {
 
   public readonly createdAt!: Date;
   public readonly updatedAt!: Date;
-//  public readonly relations!: TeamUserRelation[];
+
+  // relations
+  public readonly profile!: Profile;
+  public readonly relations!: TeamUserRelation[];
+  public readonly teams!: Team[];
 }
 
 User.init(

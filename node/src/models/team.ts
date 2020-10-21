@@ -8,6 +8,8 @@ class Team extends Model {
 
   public readonly createdAt!: Date;
   public readonly updatedAt!: Date;
+
+  // relations
   public readonly relations!: TeamUserRelation[];
 }
 

@@ -10,8 +10,9 @@ class TeamUserRelation extends Model {
   public readonly createdAt!: Date;
   public readonly updatedAt!: Date;
 
-  public team!: Team;
-  public user!: User;
+  // relations
+  public readonly team!: Team;
+  public readonly user!: User;
 }
 
 TeamUserRelation.init(
