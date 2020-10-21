@@ -30,18 +30,13 @@ async function dumpUsersWithProfileAndTeam() {
       {
         model: Team,
         as: 'teams'
-      },
-      {
-        model: Job,
-        as: 'job'
       }
     ]
   });
 
   users.forEach(user => {
-    const {id, name, profile, relations, teams, job} = user;
+    const {id, name, profile, relations, teams, jobTitle } = user;
     const { mail } = profile;
-    const jobTitle = job.title;
 
     console.log("User, ", {id, name, mail, jobTitle});
     for (const rel of relations) {

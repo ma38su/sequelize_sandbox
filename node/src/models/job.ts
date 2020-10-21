@@ -12,14 +12,9 @@ class Job extends Model {
 
 Job.init(
   {
-    id: {
-      type: DataTypes.INTEGER,
-      primaryKey: true,
-      autoIncrement: true,
-      allowNull: false
-    },
     title: {
       type: DataTypes.STRING,
+      primaryKey: true,
       allowNull: false
     },
   },

@@ -8,13 +8,12 @@ import { TeamUserRelation} from './team-user-relation';
 class User extends Model {
   public id!: number;
   public name!: string;
-  public jobId!: number;
+  public jobTitle!: number;
 
   public readonly createdAt!: Date;
   public readonly updatedAt!: Date;
 
   // relations
-  public readonly job!: Job;
   public readonly profile!: Profile;
   public readonly relations!: TeamUserRelation[];
   public readonly teams!: Team[];
@@ -32,14 +31,13 @@ User.init(
       type: DataTypes.STRING,
       allowNull: false
     },
-    jobId: {
-      type: DataTypes.INTEGER,
+    jobTitle: {
+      type: DataTypes.STRING,
       allowNull: false,
-
       // foreign key constraint
       references: {
         model: Job,
-        key: 'id'
+        key: 'title'
       }
     }
   },

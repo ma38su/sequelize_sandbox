@@ -4,7 +4,6 @@ import { Team } from './team';
 import { TeamUserRelation } from './team-user-relation';
 import { Job } from './job';
 import { ForeignKeyConstraintError } from 'sequelize';
-import { sequelize } from './sequelize-loader';
 
 // Configure Sequelize for RDB
 async function sync() {
@@ -23,7 +22,7 @@ async function sync() {
 
   console.log('setting relations...');
   User.hasOne(Profile, {sourceKey: 'id', foreignKey: 'userId', as: 'profile'});
-  User.belongsTo(Job, { foreignKey: 'jobId', targetKey: 'id', as: 'job'});
+  //User.belongsTo(Job, { foreignKey: 'jobId', targetKey: 'id', as: 'job'});
 
   User.hasMany(TeamUserRelation, {sourceKey: 'id', foreignKey: 'userId', as: 'relations'});
   TeamUserRelation.belongsTo(User, {foreignKey: 'userId', targetKey: 'id', as: 'user'});
@@ -38,12 +37,12 @@ async function sync() {
   const [engineer] = await Job.upsert({title: 'Engineer'});
   const [resercher] = await Job.upsert({title: 'Reseacher'});
   
-  const [userA] = await User.upsert({name: 'User A', jobId: engineer.id});
-  const [userB] = await User.upsert({name: 'User B', jobId: resercher.id});
+  const [userA] = await User.upsert({name: 'User A', jobTitle: 'Engineer'});
+  const [userB] = await User.upsert({name: 'User B', jobTitle: 'Reseacher'});
 
-  console.log('upsert error...');
+  console.log('upsert error1...');
   try {
-    await User.upsert({name: 'User C', jobId: 100});
+    await User.upsert({name: 'User C', jobTitle: 'Sales'});
     throw new Error('disabled Foreign Key Constraint');
   } catch (err) {
     if (err instanceof ForeignKeyConstraintError) {
@@ -53,10 +52,22 @@ async function sync() {
     }
   }
 
-  const [userC] = await User.upsert({name: 'User C', jobId: engineer.id});
+  const [userC] = await User.upsert({name: 'User C', jobTitle: 'Engineer'});
 
   const [team1] = await Team.upsert({name: 'Team 1'});
   const [team2] = await Team.upsert({name: 'Team 2'});
+
+  console.log('upsert error2...');
+  try {
+    await Profile.upsert({userId: 100, mail: 'err@example.com'});
+    throw new Error('disabled Foreign Key Constraint');
+  } catch (err) {
+    if (err instanceof ForeignKeyConstraintError) {
+      console.log('ok');
+    } else {
+      throw err;
+    }
+  }
 
   await Promise.all([
     Profile.upsert({userId: userA.id, mail: 'a@example.com'}),
