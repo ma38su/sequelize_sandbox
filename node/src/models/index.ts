@@ -4,27 +4,26 @@ import { Team } from './team';
 import { TeamUserRelation } from './team-user-relation';
 import { Job } from './job';
 import { ForeignKeyConstraintError } from 'sequelize';
+import { sequelize } from './sequelize-loader';
 
 // Configure Sequelize for RDB
 async function sync() {
 
-  User.drop();
-
-  await Job.sync({ force: true }),
-  await User.sync(),
+  console.log('drop table if exists...');
+  await TeamUserRelation.drop();
+  await Profile.drop(),
+  await User.drop();
 
   console.log('sync...');
-  await Promise.all([
-    Team.sync({ force: true }),
-    Profile.sync({ force: true }),
-    TeamUserRelation.sync({ force: true }),
-  ]);
+  await Job.sync({ force: true });
+  await Team.sync({ force: true });
+  await User.sync();
+  await Profile.sync();
+  await TeamUserRelation.sync(),
 
   console.log('setting relations...');
-
   User.hasOne(Profile, {sourceKey: 'id', foreignKey: 'userId', as: 'profile'});
   User.belongsTo(Job, { foreignKey: 'jobId', targetKey: 'id', as: 'job'});
-  //Job.hasMany(User, {sourceKey: 'id', foreignKey: 'jobId', as: 'users'});
 
   User.hasMany(TeamUserRelation, {sourceKey: 'id', foreignKey: 'userId', as: 'relations'});
   TeamUserRelation.belongsTo(User, {foreignKey: 'userId', targetKey: 'id', as: 'user'});

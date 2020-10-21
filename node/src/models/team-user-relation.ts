@@ -20,12 +20,22 @@ TeamUserRelation.init(
     teamId: {
       type: DataTypes.INTEGER,
       primaryKey: true,
-      allowNull: false
+      allowNull: false,
+      // foreign key constraint
+      references: {
+        model: Team,
+        key: 'id'
+      }
     },
     userId: {
       type: DataTypes.INTEGER,
       primaryKey: true,
-      allowNull: false
+      allowNull: false,
+      // foreign key constraint
+      references: {
+        model: User,
+        key: 'id'
+      }
     },
   },
   {

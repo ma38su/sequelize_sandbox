@@ -35,6 +35,8 @@ User.init(
     jobId: {
       type: DataTypes.INTEGER,
       allowNull: false,
+
+      // foreign key constraint
       references: {
         model: Job,
         key: 'id'

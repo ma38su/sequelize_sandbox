@@ -1,6 +1,7 @@
 import { Model, DataTypes } from 'sequelize';
 
 import { sequelize } from './sequelize-loader';
+import { User } from './user';
 
 class Profile extends Model {
   public id!: number;
@@ -21,7 +22,12 @@ Profile.init(
     },
     userId: {
       type: DataTypes.INTEGER,
-      allowNull: false
+      allowNull: false,
+      // foreign key constraint
+      references: {
+        model: User,
+        key: 'id'
+      }
     },
     mail: {
       type: DataTypes.STRING,
